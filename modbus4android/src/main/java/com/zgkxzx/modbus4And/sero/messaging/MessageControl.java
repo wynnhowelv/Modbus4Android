@@ -1,12 +1,17 @@
 package com.zgkxzx.modbus4And.sero.messaging;
 
+import android.util.Log;
+
 import java.io.IOException;
 
+import com.zgkxzx.modbus4And.serial.rtu.RtuMessageRequest;
 import com.zgkxzx.modbus4And.sero.io.StreamUtils;
 //import com.serotonin.modbus4j.sero.log.BaseIOLog;
 import com.zgkxzx.modbus4And.sero.timer.SystemTimeSource;
 import com.zgkxzx.modbus4And.sero.timer.TimeSource;
 import com.zgkxzx.modbus4And.sero.util.queue.ByteQueue;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * In general there are three messaging activities:
@@ -22,7 +27,8 @@ public class MessageControl implements DataConsumer {
     private static int DEFAULT_RETRIES = 2;
     private static int DEFAULT_TIMEOUT = 500;
 
-    public boolean DEBUG = false;
+    public boolean DEBUG = true;
+    private static final String TAG = MessageControl.class.getSimpleName();
 
     private Transport transport;
     private MessageParser messageParser;
@@ -107,29 +113,37 @@ public class MessageControl implements DataConsumer {
 
     public IncomingResponseMessage send(OutgoingRequestMessage request, int timeout, int retries) throws IOException {
         byte[] data = request.getMessageData();
-        if (DEBUG)
-            System.out.println("MessagingControl.send: " + StreamUtils.dumpHex(data));
 
         IncomingResponseMessage response = null;
 
+        if (DEBUG)
+            android.util.Log.d(TAG, "request.expectsResponse(): " + request.expectsResponse());
         if (request.expectsResponse()) {
             WaitingRoomKey key = waitingRoomKeyFactory.createWaitingRoomKey(request);
-
             // Enter the waiting room
             waitingRoom.enter(key);
 
             try {
                 do {
-                    // Send the request.
-                    write(data);
-
+                    // may be do not write brightness sensor request
+                    if (request instanceof RtuMessageRequest
+                            && ((RtuMessageRequest) request).isBrightness()) {
+                       if (DEBUG) Log.d(TAG, "send: get brightness data, no need to write");
+                    } else {
+                        // Send the request.
+                        write(data);
+                        if (DEBUG) Log.d(TAG, "MessagingControl.send: " + StreamUtils.dumpHex(data));
+                    }
                     // Wait for the response.
                     response = waitingRoom.getResponse(key, timeout);
 
                     if (DEBUG && response == null)
-                        System.out.println("Timeout waiting for response");
+                        Log.d(TAG, "Timeout waiting for response");
                 }
                 while (response == null && retries-- > 0);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
             finally {
                 // Leave the waiting room.
@@ -154,7 +168,7 @@ public class MessageControl implements DataConsumer {
      */
     public void data(byte[] b, int len) {
         if (DEBUG)
-            System.out.println("MessagingConnection.read: " + StreamUtils.dumpHex(b, 0, len));
+            Log.d(TAG, "MessagingConnection.read: " + StreamUtils.dumpHex(b, 0, len) + " len:" + len);
 //        if (ioLog != null)
 //            ioLog.input(b, 0, len);
 

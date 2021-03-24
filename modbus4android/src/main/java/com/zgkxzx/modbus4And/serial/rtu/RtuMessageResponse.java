@@ -44,6 +44,17 @@ public class RtuMessageResponse extends RtuMessage implements OutgoingResponseMe
         return rtuResponse;
     }
 
+    static RtuMessageResponse createRtuBrightnessMessageResponse(ByteQueue queue) throws ModbusTransportException {
+        ModbusResponse response = ModbusResponse.createModbusBrightnessResponse(queue);
+        RtuMessageResponse rtuResponse = new RtuMessageResponse(response);
+
+        // Check the CRC
+        ModbusUtils.checkBrightnessCheckSum(rtuResponse.modbusMessage, queue);
+
+        // Return the data.
+        return rtuResponse;
+    }
+
     public RtuMessageResponse(ModbusResponse modbusResponse) {
         super(modbusResponse);
     }

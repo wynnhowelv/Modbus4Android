@@ -23,6 +23,7 @@ package com.zgkxzx.modbus4And.serial.rtu;
 import com.zgkxzx.modbus4And.base.ModbusUtils;
 import com.zgkxzx.modbus4And.exception.ModbusTransportException;
 import com.zgkxzx.modbus4And.msg.ModbusRequest;
+import com.zgkxzx.modbus4And.msg.ReadNumericRequest;
 import com.zgkxzx.modbus4And.sero.messaging.IncomingRequestMessage;
 import com.zgkxzx.modbus4And.sero.messaging.OutgoingRequestMessage;
 import com.zgkxzx.modbus4And.sero.util.queue.ByteQueue;
@@ -46,6 +47,9 @@ public class RtuMessageRequest extends RtuMessage implements OutgoingRequestMess
 
     public RtuMessageRequest(ModbusRequest modbusRequest) {
         super(modbusRequest);
+        if (modbusRequest instanceof ReadNumericRequest) {
+            isBrightness = ((ReadNumericRequest) modbusRequest).getNumberOfRegisters() == 0;
+        }
     }
 
     @Override
@@ -56,4 +60,10 @@ public class RtuMessageRequest extends RtuMessage implements OutgoingRequestMess
     public ModbusRequest getModbusRequest() {
         return (ModbusRequest) modbusMessage;
     }
+
+    public boolean isBrightness() {
+        return isBrightness;
+    }
+
+    private boolean isBrightness;
 }

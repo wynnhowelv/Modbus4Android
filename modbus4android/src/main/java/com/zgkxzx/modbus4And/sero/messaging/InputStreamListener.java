@@ -1,5 +1,9 @@
 package com.zgkxzx.modbus4And.sero.messaging;
 
+import android.util.Log;
+
+import com.zgkxzx.modbus4And.sero.io.StreamUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author Matthew Lohbihler
  */
 public class InputStreamListener implements Runnable {
+    private static final String TAG = InputStreamListener.class.getSimpleName();
+    private static final boolean DEBUG = true;
     private static final int DEFAULT_READ_DELAY = 50;
 
     private final InputStream in;
@@ -56,7 +62,7 @@ public class InputStreamListener implements Runnable {
 
     public void run() {
         byte[] buf = new byte[1024];
-        int readcount;
+        int readCount;
         try {
             while (running) {
                 try {
@@ -72,8 +78,9 @@ public class InputStreamListener implements Runnable {
                         continue;
                     }
 
-                    readcount = in.read(buf);
-                    consumer.data(buf, readcount);
+                    readCount = in.read(buf); // block until data available
+
+                    consumer.data(buf, readCount);
                 }
                 catch (IOException e) {
                     consumer.handleIOException(e);

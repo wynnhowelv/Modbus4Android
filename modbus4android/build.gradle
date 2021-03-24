@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 3
-        versionName "1.2"
+        versionName "1.3"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -21,29 +21,16 @@ android {
     }
 }
 
-//Copy类型
-task makeJar(type: Copy) {
-    //删除存在的
-    delete 'build/libs/modbus4Android.jar'
-    //设置拷贝的文件
-    from('build/intermediates/bundles/release/')
-    //打进jar包后的文件目录
-    into('build/libs/')
-    //将classes.jar放入build/libs/目录下
-    //include ,exclude参数来设置过滤
-    //（我们只关心classes.jar这个文件）
-    include('classes.jar')
-    //重命名
-    rename ('classes.jar', 'modbus4Android-'+android.defaultConfig.versionName+'.jar')
+def zipFile = file('build/intermediates/bundles/release/classes.jar')
+task makeJar(type: Jar) {
+    archiveName = 'modbus4android-'+android.defaultConfig.versionName+'.jar'
+    delete 'D:\\Android\\Sensor\\app\\libs\\modbus4android-'+android.defaultConfig.versionName+'.jar'
+    from zipTree(zipFile)
+    from (project.zipTree("libs/commons-lang3-3.1.jar"))
+    from (project.zipTree("libs/commons-logging-1.2.jar"))
+    destinationDir = file("D:\\Android\\Sensor\\app\\libs\\")
 }
-
 makeJar.dependsOn(build)
-//在终端执行生成JAR包
-// gradlew makeJar
-
-//makeJar.dependsOn(build)
-//在终端执行生成JAR包
-// gradlew makeJar
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -52,6 +39,4 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.2.0'
     testCompile 'junit:junit:4.12'
-    compile files('libs/commons-lang3-3.1.jar')
-    compile files('libs/commons-logging-1.2.jar')
 }

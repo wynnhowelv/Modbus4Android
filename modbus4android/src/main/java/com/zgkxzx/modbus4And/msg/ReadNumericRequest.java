@@ -36,6 +36,10 @@ abstract public class ReadNumericRequest extends ModbusRequest {
         this.numberOfRegisters = numberOfRegisters;
     }
 
+    public int getNumberOfRegisters() {
+        return numberOfRegisters;
+    }
+
     @Override
     public void validate(Modbus modbus) throws ModbusTransportException {
         ModbusUtils.validateOffset(startOffset);

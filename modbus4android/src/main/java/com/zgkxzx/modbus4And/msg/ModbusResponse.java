@@ -25,6 +25,7 @@ import com.zgkxzx.modbus4And.base.ModbusUtils;
 import com.zgkxzx.modbus4And.code.ExceptionCode;
 import com.zgkxzx.modbus4And.code.FunctionCode;
 import com.zgkxzx.modbus4And.exception.IllegalFunctionException;
+import com.zgkxzx.modbus4And.exception.IllegalSlaveIdException;
 import com.zgkxzx.modbus4And.exception.ModbusTransportException;
 import com.zgkxzx.modbus4And.sero.util.queue.ByteQueue;
 
@@ -72,6 +73,17 @@ abstract public class ModbusResponse extends ModbusMessage {
         return response;
     }
 
+    public static ModbusResponse createModbusBrightnessResponse(ByteQueue queue) throws ModbusTransportException {
+        int startFlag = ModbusUtils.popUnsignedByte(queue); // match modbus protocol slaveId
+
+        if (startFlag != 0x11) // brightness response start with 0x11
+            throw new IllegalSlaveIdException("not the brightness slaveId flag");
+
+        ModbusResponse response = new ReadBrightnessRegisterResponse(startFlag);
+        response.readBrightness(queue);
+        return response;
+    }
+
     protected byte exceptionCode = -1;
 
     ModbusResponse(int slaveId) throws ModbusTransportException {
@@ -113,6 +125,10 @@ abstract public class ModbusResponse extends ModbusMessage {
             exceptionCode = queue.pop();
         else
             readResponse(queue);
+    }
+
+    void readBrightness(ByteQueue queue) {
+        readResponse(queue);
     }
 
     abstract protected void readResponse(ByteQueue queue);

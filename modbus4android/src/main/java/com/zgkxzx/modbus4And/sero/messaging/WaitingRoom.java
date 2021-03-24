@@ -14,6 +14,10 @@ import org.apache.commons.logging.LogFactory;
 class WaitingRoom {
     private static final Log LOG = LogFactory.getLog(WaitingRoom.class);
 
+    private static final String TAG = WaitingRoom.class.getSimpleName();
+    private static final boolean DEBUG = true;
+
+
     private final Map<WaitingRoomKey, Member> waitHere = new HashMap<WaitingRoomKey, Member>();
 
     private WaitingRoomKeyFactory keyFactory;
@@ -34,11 +38,14 @@ class WaitingRoom {
             while (waitHere.get(key) != null) {
                 if (LOG.isDebugEnabled())
                     LOG.debug("Duplicate waiting room key found. Waiting for member to leave.");
+                if (DEBUG)
+                    android.util.Log.d(TAG, "Duplicate waiting room key found. Waiting for member to leave.");
                 try {
                     wait();
                 }
                 catch (InterruptedException e) {
                     // no op
+                    e.printStackTrace();
                 }
             }
             //            Member dup = waitHere.get(key);

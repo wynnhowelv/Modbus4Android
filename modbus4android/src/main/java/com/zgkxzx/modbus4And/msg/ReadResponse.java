@@ -26,7 +26,7 @@ import com.zgkxzx.modbus4And.sero.io.StreamUtils;
 import com.zgkxzx.modbus4And.sero.util.queue.ByteQueue;
 
 abstract public class ReadResponse extends ModbusResponse {
-    private byte[] data;
+    protected byte[] data;
 
     ReadResponse(int slaveId) throws ModbusTransportException {
         super(slaveId);

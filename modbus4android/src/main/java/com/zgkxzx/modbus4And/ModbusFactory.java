@@ -49,6 +49,10 @@ public class ModbusFactory {
         return new RtuMaster(wrapper);
     }
 
+    public ModbusMaster createRtuMaster(boolean isBrightness, SerialPortWrapper wrapper) {
+        return new RtuMaster(isBrightness, wrapper);
+    }
+
     /**
      * Create an RTU Master with specific message frame timing
      * 

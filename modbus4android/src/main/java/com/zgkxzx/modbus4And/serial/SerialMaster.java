@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import com.zgkxzx.modbus4And.ModbusMaster;
 import com.zgkxzx.modbus4And.exception.ModbusInitException;
 import com.zgkxzx.modbus4And.sero.messaging.EpollStreamTransportCharSpaced;
+import com.zgkxzx.modbus4And.sero.messaging.StreamTransport;
 import com.zgkxzx.modbus4And.sero.messaging.StreamTransportCharSpaced;
 import com.zgkxzx.modbus4And.sero.messaging.Transport;
 
@@ -55,6 +56,10 @@ abstract public class SerialMaster extends ModbusMaster {
         this.wrapper = wrapper;
     }
 
+    public void setSerialWrapper(SerialPortWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
+
     @Override
     public void init() throws ModbusInitException {
         try {
@@ -65,7 +70,8 @@ abstract public class SerialMaster extends ModbusMaster {
                 transport = new EpollStreamTransportCharSpaced(wrapper.getInputStream(), wrapper.getOutputStream(),
                         getePoll(), this.characterSpacing);
             else
-                transport = new StreamTransportCharSpaced(wrapper.getInputStream(), wrapper.getOutputStream(), this.characterSpacing);
+                transport = new StreamTransport(wrapper.getInputStream(), wrapper.getOutputStream());
+//                transport = new StreamTransportCharSpaced(wrapper.getInputStream(), wrapper.getOutputStream(), this.characterSpacing);
         }
         catch (Exception e) {
             throw new ModbusInitException(e);

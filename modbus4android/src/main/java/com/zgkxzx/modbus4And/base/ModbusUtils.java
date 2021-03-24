@@ -20,14 +20,20 @@
  */
 package com.zgkxzx.modbus4And.base;
 
+import android.util.Log;
+
 import com.zgkxzx.modbus4And.code.RegisterRange;
 import com.zgkxzx.modbus4And.exception.IllegalSlaveIdException;
 import com.zgkxzx.modbus4And.exception.ModbusIdException;
 import com.zgkxzx.modbus4And.exception.ModbusTransportException;
 import com.zgkxzx.modbus4And.msg.ModbusMessage;
+import com.zgkxzx.modbus4And.sero.io.StreamUtils;
 import com.zgkxzx.modbus4And.sero.util.queue.ByteQueue;
 
 public class ModbusUtils {
+    private static final String TAG = ModbusUtils.class.getSimpleName();
+    private static final boolean DEBUG = false;
+
     public static final int TCP_PORT = 502;
     public static final int IP_PROTOCOL_ID = 0; // Modbus protocol
 
@@ -101,7 +107,7 @@ public class ModbusUtils {
         int givenCrc = ModbusUtils.popUnsignedShort(queue);
 
         if (calcCrc != givenCrc)
-            throw new ModbusTransportException("CRC mismatch: given=" + givenCrc + ", calc=" + calcCrc,
+            throw new ModbusTransportException("CRC mismatch: given=" + givenCrc + " (hex:" + Integer.toHexString(givenCrc)+ "), calc=" + calcCrc + "(hex:" + Integer.toHexString(calcCrc) + ")",
                     modbusMessage.getSlaveId());
     }
 
@@ -122,6 +128,28 @@ public class ModbusUtils {
         }
 
         return (high << 8) | low;
+    }
+
+    public static void checkBrightnessCheckSum(ModbusMessage modbusMessage, ByteQueue queue) throws ModbusTransportException {
+        int calcCheckSum = calculateBrightnessCRC(modbusMessage);
+        int givenCheckSum = queue.pop();
+
+        if (calcCheckSum != givenCheckSum)
+            throw new ModbusTransportException("Brightness CRC mismatch: given=" + givenCheckSum + " (hex:" + Integer.toHexString(givenCheckSum)+ "), calc=" + calcCheckSum + "(hex:" + Integer.toHexString(calcCheckSum) + ")",
+                    modbusMessage.getSlaveId());
+    }
+
+    public static int calculateBrightnessCRC(ModbusMessage modbusMessage) {
+        ByteQueue queue = new ByteQueue();
+        modbusMessage.write(queue);
+        if (DEBUG) Log.d(TAG, "calculateBrightnessCRC: queue:" + queue.size());
+        int checkSum = 0;
+        while(queue.size() > 0) {
+            checkSum += queue.pop();
+        }
+        if (DEBUG) Log.d(TAG, "calculateBrightnessCRC: checkSum:" + checkSum);
+        checkSum = checkSum & 0xFF;
+        return (byte)checkSum;
     }
 
     // Table of CRC values for high-order byte

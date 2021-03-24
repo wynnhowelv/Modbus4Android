@@ -61,7 +61,7 @@ public class Modbus {
     }
 
     public void validateNumberOfRegisters(int registers) throws ModbusTransportException {
-        if (registers < 1 || registers > maxReadRegisterCount)
+        if (registers < 0 || registers > maxReadRegisterCount)
             throw new ModbusTransportException("Invalid number of registers: " + registers);
     }
 

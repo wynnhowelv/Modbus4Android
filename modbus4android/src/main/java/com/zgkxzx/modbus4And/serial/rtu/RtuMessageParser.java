@@ -31,14 +31,26 @@ import com.zgkxzx.modbus4And.sero.util.queue.ByteQueue;
  * @author mlohbihler
  */
 public class RtuMessageParser extends BaseMessageParser {
+
+    private boolean isBrightness;
+
+    public void setIsBrightness(boolean isBrightness) {
+        this.isBrightness = isBrightness;
+    }
+
     public RtuMessageParser(boolean master) {
         super(master);
     }
 
     @Override
     protected IncomingMessage parseMessageImpl(ByteQueue queue) throws Exception {
-        if (master)
-            return RtuMessageResponse.createRtuMessageResponse(queue);
+        if (master) {
+            RtuMessageResponse rtuMessageResponse = isBrightness
+                    ? RtuMessageResponse.createRtuBrightnessMessageResponse(queue)
+                    : RtuMessageResponse.createRtuMessageResponse(queue);
+            return rtuMessageResponse;
+        }
+
         return RtuMessageRequest.createRtuMessageRequest(queue);
     }
     //

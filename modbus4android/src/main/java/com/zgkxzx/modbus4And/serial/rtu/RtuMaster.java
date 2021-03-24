@@ -39,6 +39,12 @@ public class RtuMaster extends SerialMaster {
     private MessageControl conn;
     private long lastSendTime; //Last time sent (Nano-time, not wall clock time)
     private long messageFrameSpacing; //Time in ns
+
+    private boolean isBrightness;
+
+    public void setIsBrightness(boolean isBrightness) {
+        this.isBrightness = isBrightness;
+    }
     
     /**
      * For legacy purposes, create RTU Master and
@@ -47,6 +53,11 @@ public class RtuMaster extends SerialMaster {
      */
     public RtuMaster(SerialPortWrapper wrapper){
     	this(wrapper, true);
+    }
+
+    public RtuMaster(boolean isBrightness, SerialPortWrapper wrapper) {
+        this(wrapper);
+        this.isBrightness = isBrightness;
     }
 
     /**
@@ -86,6 +97,7 @@ public class RtuMaster extends SerialMaster {
         super.init();
 
         RtuMessageParser rtuMessageParser = new RtuMessageParser(true);
+        rtuMessageParser.setIsBrightness(isBrightness);
         conn = getMessageControl();
         try {
             conn.start(transport, rtuMessageParser, null, new SerialWaitingRoomKeyFactory());
@@ -102,6 +114,7 @@ public class RtuMaster extends SerialMaster {
     public void destroy() {
         closeMessageControl(conn);
         super.close();
+        initialized = false;
     }
 
     @Override

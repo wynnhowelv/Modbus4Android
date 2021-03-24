@@ -51,6 +51,7 @@ import com.zgkxzx.modbus4And.msg.WriteCoilsRequest;
 import com.zgkxzx.modbus4And.msg.WriteMaskRegisterRequest;
 import com.zgkxzx.modbus4And.msg.WriteRegisterRequest;
 import com.zgkxzx.modbus4And.msg.WriteRegistersRequest;
+import com.zgkxzx.modbus4And.serial.SerialPortWrapper;
 import com.zgkxzx.modbus4And.sero.epoll.InputStreamEPollWrapper;
 //import com.serotonin.modbus4j.sero.log.BaseIOLog;
 import com.zgkxzx.modbus4And.sero.messaging.MessageControl;
