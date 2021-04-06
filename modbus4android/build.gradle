@@ -24,10 +24,9 @@ android {
 def zipFile = file('build/intermediates/bundles/release/classes.jar')
 task makeJar(type: Jar) {
     archiveName = 'modbus4android-'+android.defaultConfig.versionName+'.jar'
-    delete 'D:\\Android\\Sensor\\app\\libs\\modbus4android-'+android.defaultConfig.versionName+'.jar'
+//    delete 'D:\\Android\\Sensor\\app\\libs\\modbus4android-'+android.defaultConfig.versionName+'.jar'
     from zipTree(zipFile)
     from (project.zipTree("libs/commons-lang3-3.1.jar"))
-    from (project.zipTree("libs/commons-logging-1.2.jar"))
     destinationDir = file("D:\\Android\\Sensor\\app\\libs\\")
 }
 makeJar.dependsOn(build)

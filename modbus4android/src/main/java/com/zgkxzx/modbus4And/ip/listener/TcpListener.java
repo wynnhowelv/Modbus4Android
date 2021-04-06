@@ -31,8 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.zgkxzx.modbus4And.logging.Log;
+import com.zgkxzx.modbus4And.logging.LogFactory;
 
 import com.zgkxzx.modbus4And.ModbusMaster;
 import com.zgkxzx.modbus4And.base.BaseMessageParser;

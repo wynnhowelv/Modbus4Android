@@ -3,8 +3,8 @@ package com.zgkxzx.modbus4And.sero.messaging;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.zgkxzx.modbus4And.logging.Log;
+import com.zgkxzx.modbus4And.logging.LogFactory;
 
 /**
  * The waiting room is a place for request messages to hang out while awaiting their responses.
